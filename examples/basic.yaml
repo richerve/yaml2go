@@ -1,0 +1,11 @@
+---
+mykey:
+  myvalue1: 1
+  myvalue2: two
+foo: bar
+items:
+  - a
+  - b
+  - c
+empty: {}
+enable: true
