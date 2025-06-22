@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/goccy/go-yaml/parser"
-	"github.com/richerve/yaml2go"
+	"github.com/richerve/yaml2go/generator"
 )
 
 func main() {
@@ -33,6 +33,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	generator := yaml2go.NewGenerator()
-	fmt.Print(generator.Generate(file, tagPrefix))
+	gen := generator.New()
+	fmt.Print(gen.Generate(file, tagPrefix))
 }
