@@ -1,9 +1,8 @@
 package inference
 
 import (
-	"github.com/richerve/yaml2go/codegen"
-
 	"github.com/goccy/go-yaml/ast"
+	"github.com/richerve/yaml2go/pkg/codegen"
 )
 
 func DetermineType(node ast.Node, fieldName string, structs map[string]codegen.StructDef, path []string) string {

@@ -1,11 +1,8 @@
 package codegen
 
 import (
-	"strings"
 	"testing"
 )
-
-// NewFieldDef is a simple constructor - no test needed
 
 func TestFieldTag_String(t *testing.T) {
 	tests := []struct {
@@ -67,15 +64,6 @@ func TestFieldTag_String(t *testing.T) {
 			},
 			expected: "",
 		},
-		{
-			name: "yaml tag",
-			fieldTag: FieldTag{
-				Prefix: "yaml",
-				Value:  "user_name",
-				Flags:  []string{"omitempty"},
-			},
-			expected: "`yaml:\"user_name,omitempty\"`",
-		},
 	}
 
 	for _, tt := range tests {
@@ -88,97 +76,141 @@ func TestFieldTag_String(t *testing.T) {
 	}
 }
 
-func TestWriteField(t *testing.T) {
+func TestFieldDef_String(t *testing.T) {
 	tests := []struct {
-		name      string
-		field     FieldDef
-		tagPrefix string
-		expected  string
+		name     string
+		field    FieldDef
+		expected string
 	}{
 		{
 			name: "basic field",
 			field: FieldDef{
 				Name: "username",
 				Type: "string",
+				Tag: &FieldTag{
+					Prefix: "json",
+					Value:  "username",
+					Flags:  []string{},
+				},
 			},
-			tagPrefix: "json",
-			expected:  "Username string `json:\"username\"`",
+			expected: "Username string `json:\"username\"`",
 		},
 		{
 			name: "field with flags",
 			field: FieldDef{
-				Name:  "email",
-				Type:  "string",
-				Flags: []string{"omitempty"},
+				Name: "email",
+				Type: "string",
+				Tag: &FieldTag{
+					Prefix: "json",
+					Value:  "email",
+					Flags:  []string{"omitempty"},
+				},
 			},
-			tagPrefix: "json",
-			expected:  "Email string `json:\"email,omitempty\"`",
+			expected: "Email string `json:\"email,omitempty\"`",
 		},
 		{
 			name: "field with multiple flags",
 			field: FieldDef{
-				Name:  "password",
-				Type:  "string",
-				Flags: []string{"omitempty", "readonly"},
+				Name: "password",
+				Type: "string",
+				Tag: &FieldTag{
+					Prefix: "json",
+					Value:  "password",
+					Flags:  []string{"omitempty", "readonly"},
+				},
 			},
-			tagPrefix: "json",
-			expected:  "Password string `json:\"password,omitempty,readonly\"`",
+			expected: "Password string `json:\"password,omitempty,readonly\"`",
 		},
 		{
 			name: "snake_case field name",
 			field: FieldDef{
 				Name: "user_name",
 				Type: "string",
+				Tag: &FieldTag{
+					Prefix: "yaml",
+					Value:  "user_name",
+					Flags:  []string{},
+				},
 			},
-			tagPrefix: "yaml",
-			expected:  "UserName string `yaml:\"user_name\"`",
+			expected: "UserName string `yaml:\"user_name\"`",
 		},
 		{
 			name: "kebab-case field name",
 			field: FieldDef{
 				Name: "user-name",
 				Type: "string",
+				Tag: &FieldTag{
+					Prefix: "json",
+					Value:  "user-name",
+					Flags:  []string{},
+				},
 			},
-			tagPrefix: "json",
-			expected:  "UserName string `json:\"user-name\"`",
+			expected: "UserName string `json:\"user-name\"`",
 		},
 		{
 			name: "complex type",
 			field: FieldDef{
 				Name: "items",
 				Type: "[]Item",
+				Tag: &FieldTag{
+					Prefix: "json",
+					Value:  "items",
+					Flags:  []string{},
+				},
 			},
-			tagPrefix: "json",
-			expected:  "Items []Item `json:\"items\"`",
+			expected: "Items []Item `json:\"items\"`",
+		},
+		{
+			name: "field with nil tag",
+			field: FieldDef{
+				Name: "username",
+				Type: "string",
+				Tag:  nil,
+			},
+			expected: "Username string",
+		},
+		{
+			name: "field with empty tag",
+			field: FieldDef{
+				Name: "username",
+				Type: "string",
+				Tag: &FieldTag{
+					Prefix: "",
+					Value:  "",
+					Flags:  []string{},
+				},
+			},
+			expected: "Username string",
 		},
 		{
 			name: "empty field name",
 			field: FieldDef{
 				Name: "",
 				Type: "string",
+				Tag: &FieldTag{
+					Prefix: "json",
+					Value:  "field",
+					Flags:  []string{},
+				},
 			},
-			tagPrefix: "json",
-			expected:  " string ",
+			expected: " string `json:\"field\"`",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var builder strings.Builder
-			WriteField(&builder, tt.field, tt.tagPrefix)
-			result := builder.String()
+			result := tt.field.String()
 			if result != tt.expected {
-				t.Errorf("WriteField() = %v, want %v", result, tt.expected)
+				t.Errorf("FieldDef.String() = %v, want %v", result, tt.expected)
 			}
 		})
 	}
 }
 
-func TestWriteStruct(t *testing.T) {
+func TestStructDef_String(t *testing.T) {
 	tests := []struct {
 		name      string
 		structDef StructDef
-		tagPrefix string
 		expected  string
 	}{
 		{
@@ -186,11 +218,26 @@ func TestWriteStruct(t *testing.T) {
 			structDef: StructDef{
 				Name: "User",
 				Fields: []FieldDef{
-					{Name: "username", Type: "string"},
-					{Name: "email", Type: "string"},
+					{
+						Name: "username",
+						Type: "string",
+						Tag: &FieldTag{
+							Prefix: "json",
+							Value:  "username",
+							Flags:  []string{},
+						},
+					},
+					{
+						Name: "email",
+						Type: "string",
+						Tag: &FieldTag{
+							Prefix: "json",
+							Value:  "email",
+							Flags:  []string{},
+						},
+					},
 				},
 			},
-			tagPrefix: "json",
 			expected: `type User struct {
 	Username string ` + "`json:\"username\"`" + `
 	Email string ` + "`json:\"email\"`" + `
@@ -202,11 +249,26 @@ func TestWriteStruct(t *testing.T) {
 			structDef: StructDef{
 				Name: "User",
 				Fields: []FieldDef{
-					{Name: "username", Type: "string"},
-					{Name: "email", Type: "string", Flags: []string{"omitempty"}},
+					{
+						Name: "username",
+						Type: "string",
+						Tag: &FieldTag{
+							Prefix: "json",
+							Value:  "username",
+							Flags:  []string{},
+						},
+					},
+					{
+						Name: "email",
+						Type: "string",
+						Tag: &FieldTag{
+							Prefix: "json",
+							Value:  "email",
+							Flags:  []string{"omitempty"},
+						},
+					},
 				},
 			},
-			tagPrefix: "json",
 			expected: `type User struct {
 	Username string ` + "`json:\"username\"`" + `
 	Email string ` + "`json:\"email,omitempty\"`" + `
@@ -219,7 +281,6 @@ func TestWriteStruct(t *testing.T) {
 				Name:   "Empty",
 				Fields: []FieldDef{},
 			},
-			tagPrefix: "json",
 			expected: `type Empty struct {
 }
 `,
@@ -229,13 +290,44 @@ func TestWriteStruct(t *testing.T) {
 			structDef: StructDef{
 				Name: "Document",
 				Fields: []FieldDef{
-					{Name: "title", Type: "string"},
-					{Name: "tags", Type: "[]string"},
-					{Name: "metadata", Type: "map[string]interface{}"},
-					{Name: "nested", Type: "NestedStruct"},
+					{
+						Name: "title",
+						Type: "string",
+						Tag: &FieldTag{
+							Prefix: "yaml",
+							Value:  "title",
+							Flags:  []string{},
+						},
+					},
+					{
+						Name: "tags",
+						Type: "[]string",
+						Tag: &FieldTag{
+							Prefix: "yaml",
+							Value:  "tags",
+							Flags:  []string{},
+						},
+					},
+					{
+						Name: "metadata",
+						Type: "map[string]interface{}",
+						Tag: &FieldTag{
+							Prefix: "yaml",
+							Value:  "metadata",
+							Flags:  []string{},
+						},
+					},
+					{
+						Name: "nested",
+						Type: "NestedStruct",
+						Tag: &FieldTag{
+							Prefix: "yaml",
+							Value:  "nested",
+							Flags:  []string{},
+						},
+					},
 				},
 			},
-			tagPrefix: "yaml",
 			expected: `type Document struct {
 	Title string ` + "`yaml:\"title\"`" + `
 	Tags []string ` + "`yaml:\"tags\"`" + `
@@ -249,12 +341,35 @@ func TestWriteStruct(t *testing.T) {
 			structDef: StructDef{
 				Name: "Config",
 				Fields: []FieldDef{
-					{Name: "api_key", Type: "string"},
-					{Name: "base_url", Type: "string"},
-					{Name: "timeout_seconds", Type: "int"},
+					{
+						Name: "api_key",
+						Type: "string",
+						Tag: &FieldTag{
+							Prefix: "json",
+							Value:  "api_key",
+							Flags:  []string{},
+						},
+					},
+					{
+						Name: "base_url",
+						Type: "string",
+						Tag: &FieldTag{
+							Prefix: "json",
+							Value:  "base_url",
+							Flags:  []string{},
+						},
+					},
+					{
+						Name: "timeout_seconds",
+						Type: "int",
+						Tag: &FieldTag{
+							Prefix: "json",
+							Value:  "timeout_seconds",
+							Flags:  []string{},
+						},
+					},
 				},
 			},
-			tagPrefix: "json",
 			expected: `type Config struct {
 	ApiKey string ` + "`json:\"api_key\"`" + `
 	BaseUrl string ` + "`json:\"base_url\"`" + `
@@ -266,11 +381,9 @@ func TestWriteStruct(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var builder strings.Builder
-			WriteStruct(&builder, tt.structDef, tt.tagPrefix)
-			result := builder.String()
+			result := tt.structDef.String()
 			if result != tt.expected {
-				t.Errorf("WriteStruct() = %v, want %v", result, tt.expected)
+				t.Errorf("StructDef.String() = %v, want %v", result, tt.expected)
 			}
 		})
 	}
@@ -368,10 +481,8 @@ func TestCapitalize(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			result := Capitalize(tt.input)
 			if result != tt.expected {
-				t.Errorf("Capitalize(%v) = %v, want %v", tt.input, result, tt.expected)
+				t.Errorf("Capitalize(%v) = %v, want %v", result, result, tt.expected)
 			}
 		})
 	}
 }
-
-// StructDef and FieldDef are simple data structures - no tests needed for basic access

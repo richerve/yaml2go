@@ -5,7 +5,7 @@ import (
 
 	"github.com/goccy/go-yaml/ast"
 	"github.com/goccy/go-yaml/parser"
-	"github.com/richerve/yaml2go/codegen"
+	"github.com/richerve/yaml2go/pkg/codegen"
 )
 
 // NewASTVisitor is a simple constructor - no test needed
@@ -198,10 +198,12 @@ func TestASTVisitor_visitMappingNode(t *testing.T) {
 								}
 								if tt.expectOmitEmpty {
 									hasOmitEmpty := false
-									for _, flag := range field.Flags {
-										if flag == "omitempty" {
-											hasOmitEmpty = true
-											break
+									if field.Tag != nil {
+										for _, flag := range field.Tag.Flags {
+											if flag == "omitempty" {
+												hasOmitEmpty = true
+												break
+											}
 										}
 									}
 									if !hasOmitEmpty {

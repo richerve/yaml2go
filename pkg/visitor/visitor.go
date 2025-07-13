@@ -1,15 +1,15 @@
 package visitor
 
 import (
-	"github.com/richerve/yaml2go/codegen"
-	"github.com/richerve/yaml2go/inference"
-
 	"github.com/goccy/go-yaml/ast"
+	"github.com/richerve/yaml2go/pkg/codegen"
+	"github.com/richerve/yaml2go/pkg/inference"
 )
 
 type ASTVisitor struct {
-	structs map[string]codegen.StructDef
-	path    []string
+	structs   map[string]codegen.StructDef
+	path      []string
+	tagPrefix string
 }
 
 func NewASTVisitor(structs map[string]codegen.StructDef, path []string) *ASTVisitor {
@@ -64,9 +64,13 @@ func (v *ASTVisitor) visitMappingNode(node *ast.MappingNode) ast.Visitor {
 		}
 
 		fd := codegen.FieldDef{
-			Name:  fieldName,
-			Type:  fieldType,
-			Flags: flags,
+			Name: fieldName,
+			Type: fieldType,
+			Tag: &codegen.FieldTag{
+				Prefix: v.tagPrefix,
+				Value:  fieldName,
+				Flags:  flags,
+			},
 		}
 
 		fields = append(fields, fd)

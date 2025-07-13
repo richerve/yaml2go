@@ -10,17 +10,33 @@ type StructDef struct {
 	Fields []FieldDef
 }
 
-type FieldDef struct {
-	Name  string
-	Type  string
-	Flags []string
+func (s StructDef) String() string {
+	var builder strings.Builder
+	fmt.Fprintf(&builder, "type %s struct {\n", s.Name)
+	for _, field := range s.Fields {
+		builder.WriteString("\t")
+		fmt.Fprint(&builder, field.String())
+		builder.WriteString("\n")
+	}
+	builder.WriteString("}\n")
+
+	return builder.String()
 }
 
-func NewFieldDef(name, ftype string) FieldDef {
-	return FieldDef{
-		Name: name,
-		Type: ftype,
+type FieldDef struct {
+	Name string
+	Type string
+	Tag  *FieldTag
+}
+
+func (f FieldDef) String() string {
+	var builder strings.Builder
+
+	builder.WriteString(fmt.Sprintf("%s %s", Capitalize(f.Name), f.Type))
+	if f.Tag != nil && f.Tag.String() != "" {
+		builder.WriteString(fmt.Sprintf(" %s", f.Tag.String()))
 	}
+	return builder.String()
 }
 
 type FieldTag struct {
@@ -45,27 +61,6 @@ func (f *FieldTag) String() string {
 	sb.WriteString("\"`")
 
 	return sb.String()
-}
-
-func WriteField(builder *strings.Builder, field FieldDef, tagPrefix string) {
-	ft := FieldTag{
-		Prefix: tagPrefix,
-		Value:  field.Name,
-		Flags:  field.Flags,
-	}
-	tag := ft.String()
-
-	fmt.Fprintf(builder, "%s %s %s", Capitalize(field.Name), field.Type, tag)
-}
-
-func WriteStruct(builder *strings.Builder, structDef StructDef, tagPrefix string) {
-	fmt.Fprintf(builder, "type %s struct {\n", structDef.Name)
-	for _, field := range structDef.Fields {
-		builder.WriteString("\t")
-		WriteField(builder, field, tagPrefix)
-		builder.WriteString("\n")
-	}
-	builder.WriteString("}\n")
 }
 
 func Capitalize(s string) string {

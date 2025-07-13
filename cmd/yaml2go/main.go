@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/goccy/go-yaml/parser"
-	"github.com/richerve/yaml2go/generator"
+	"github.com/richerve/yaml2go/pkg/generator"
 )
 
 func main() {

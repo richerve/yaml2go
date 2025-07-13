@@ -1,0 +1,46 @@
+---
+database:
+  connection:
+    host: localhost
+    port: 5432
+    credentials:
+      username: admin
+      password: secret123
+      ssl_enabled: true
+  tables:
+    users:
+      columns:
+        - id
+        - name
+        - email
+      indexes:
+        primary: id
+        unique: email
+    products:
+      columns:
+        - id
+        - title
+        - price
+      settings:
+        auto_increment: true
+        charset: utf8
+application:
+  server:
+    environment: production
+    features:
+      logging:
+        level: info
+        file: /var/log/app.log
+      cache:
+        enabled: true
+        ttl: 3600
+    ports:
+      - 8080
+      - 8443
+  monitoring:
+    metrics:
+      enabled: true
+      endpoint: /metrics
+    health_check:
+      path: /health
+      timeout: 30

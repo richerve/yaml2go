@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/goccy/go-yaml/parser"
-	"github.com/richerve/yaml2go/codegen"
+	"github.com/richerve/yaml2go/pkg/codegen"
 )
 
 func TestDetermineType(t *testing.T) {

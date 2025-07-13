@@ -6,10 +6,9 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/richerve/yaml2go/codegen"
-	"github.com/richerve/yaml2go/visitor"
-
 	"github.com/goccy/go-yaml/ast"
+	"github.com/richerve/yaml2go/pkg/codegen"
+	"github.com/richerve/yaml2go/pkg/visitor"
 )
 
 type Generator struct {
@@ -47,7 +46,10 @@ func (g *Generator) Generate(file *ast.File, tagPrefix string) string {
 		if i > 0 {
 			result.WriteString("\n")
 		}
-		codegen.WriteStruct(&result, g.structs[rootName], tagPrefix)
+		_, err := result.WriteString(g.structs[rootName].String())
+		if err != nil {
+			return ""
+		}
 	}
 
 	// Generate other structs in sorted order
@@ -62,7 +64,10 @@ func (g *Generator) Generate(file *ast.File, tagPrefix string) string {
 
 	for _, name := range otherNames {
 		result.WriteString("\n")
-		codegen.WriteStruct(&result, g.structs[name], tagPrefix)
+		_, err := result.WriteString(g.structs[name].String())
+		if err != nil {
+			return ""
+		}
 	}
 
 	return result.String()
