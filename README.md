@@ -14,7 +14,7 @@ The project is also used as a semi-testbed for agentic coding trying different m
 - For each yaml document read from the input, a root level struct "Document#" will be created, where # is an int starting from 1.
 - If the document has only one map key and all remaining items are under that key. The name of the initial struct will be the name of that key.
 - The yaml types `string`, `number` or `boolean` are represented as a pointer to the corresponding Go type.
-- Empty yaml values: `""`, `[]`, `{}`, `0`, must have the the `omitempty` json tag flag. When using Go 1.24 or above the `omitzero` json tag flag should be used instead.
+- Empty yaml values: `""`, `[]`, `{}`, `0`, must have an `omitempty` json tag flag. When passing the `-use-omitzero` cli flag, the `omitzero` json tag flag is used instead.
   - if the yaml value is `[]` is represented as a `[]any` in Go.
   - if the yaml value `{}` is represented as a `map[string]any`
 

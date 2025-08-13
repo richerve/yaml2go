@@ -11,7 +11,9 @@ import (
 
 func main() {
 	var tagPrefix string
+	var useOmitZero bool
 	flag.StringVar(&tagPrefix, "tag-prefix", "json", "tag prefix to use, default is json")
+	flag.BoolVar(&useOmitZero, "use-omitzero", false, "use omitzero instead of omitempty for empty values")
 	flag.Parse()
 
 	if len(flag.Args()) < 1 {
@@ -34,5 +36,5 @@ func main() {
 	}
 
 	gen := generator.New()
-	fmt.Print(gen.Generate(file, tagPrefix))
+	fmt.Print(gen.Generate(file, tagPrefix, useOmitZero))
 }

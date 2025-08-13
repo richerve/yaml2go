@@ -21,12 +21,12 @@ func New() *Generator {
 	}
 }
 
-func (g *Generator) Generate(file *ast.File, tagPrefix string) string {
+func (g *Generator) Generate(file *ast.File, tagPrefix string, useOmitZero bool) string {
 	// Process each document in the file using Walk
 	for i, doc := range file.Docs {
 		rootName := g.determineDocumentName(doc, i, len(file.Docs))
 
-		v := visitor.NewASTVisitor(g.structs, []string{rootName}, tagPrefix)
+		v := visitor.NewASTVisitor(g.structs, []string{rootName}, tagPrefix, useOmitZero)
 		ast.Walk(v, doc)
 	}
 

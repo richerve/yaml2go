@@ -7,16 +7,18 @@ import (
 )
 
 type ASTVisitor struct {
-	structs   map[string]codegen.StructDef
-	path      []string
-	tagPrefix string
+	structs     map[string]codegen.StructDef
+	path        []string
+	tagPrefix   string
+	useOmitZero bool
 }
 
-func NewASTVisitor(structs map[string]codegen.StructDef, path []string, tagPrefix string) *ASTVisitor {
+func NewASTVisitor(structs map[string]codegen.StructDef, path []string, tagPrefix string, useOmitZero bool) *ASTVisitor {
 	return &ASTVisitor{
-		structs:   structs,
-		path:      path,
-		tagPrefix: tagPrefix,
+		structs:     structs,
+		path:        path,
+		tagPrefix:   tagPrefix,
+		useOmitZero: useOmitZero,
 	}
 }
 
@@ -59,9 +61,13 @@ func (v *ASTVisitor) visitMappingNode(node *ast.MappingNode) ast.Visitor {
 		fieldType := inference.DetermineType(mappingValue.Value, keyValue, v.structs, v.path)
 
 		flags := []string{}
-		// Check if value is empty and add omitempty tag
+		// Check if value is empty and add omitempty/omitzero tag
 		if inference.IsEmptyValue(mappingValue.Value) {
-			flags = append(flags, "omitempty")
+			if v.useOmitZero {
+				flags = append(flags, "omitzero")
+			} else {
+				flags = append(flags, "omitempty")
+			}
 		}
 
 		fd := codegen.FieldDef{
@@ -96,9 +102,10 @@ func (v *ASTVisitor) visitMappingValueNode(node *ast.MappingValueNode) ast.Visit
 	newPath = append(newPath, keyValue)
 
 	newVisitor := &ASTVisitor{
-		structs:   v.structs,
-		path:      newPath,
-		tagPrefix: v.tagPrefix,
+		structs:     v.structs,
+		path:        newPath,
+		tagPrefix:   v.tagPrefix,
+		useOmitZero: v.useOmitZero,
 	}
 
 	// Walk the value with the updated path context

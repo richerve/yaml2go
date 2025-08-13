@@ -205,7 +205,7 @@ type Settings struct {
 			}
 
 			gen := New()
-			result := gen.Generate(file, tt.tagPrefix)
+			result := gen.Generate(file, tt.tagPrefix, false)
 
 			// Normalize whitespace for comparison
 			normalizeWhitespace := func(s string) string {
@@ -429,7 +429,7 @@ type Document3 struct {
 			}
 
 			gen := New()
-			result := gen.Generate(file, tt.tagPrefix)
+			result := gen.Generate(file, tt.tagPrefix, false)
 
 			// Normalize whitespace for comparison
 			normalizeWhitespace := func(s string) string {
@@ -540,7 +540,7 @@ data:
 			}
 
 			gen := New()
-			result := gen.Generate(file, tt.tagPrefix)
+			result := gen.Generate(file, tt.tagPrefix, false)
 
 			tt.checkFunc(t, result)
 		})
@@ -593,7 +593,7 @@ age: 30
 			}
 
 			gen := New()
-			result := gen.Generate(file, tt.tagPrefix)
+			result := gen.Generate(file, tt.tagPrefix, false)
 
 			if tt.expected == "" {
 				// For empty tag prefix, tags should be empty
@@ -603,6 +603,59 @@ age: 30
 			} else {
 				if !strings.Contains(result, tt.expected) {
 					t.Errorf("Expected result to contain %s, got: %s", tt.expected, result)
+				}
+			}
+		})
+	}
+}
+
+func TestGenerator_Generate_OmitZeroFlag(t *testing.T) {
+	yamlInput := `
+emptystring: ""
+emptyint: 0
+normal: "hello"
+`
+
+	tests := []struct {
+		name        string
+		useOmitZero bool
+		expected    string
+	}{
+		{
+			name:        "omitempty flag (default)",
+			useOmitZero: false,
+			expected:    "`json:\"emitempty,omitempty\"`",
+		},
+		{
+			name:        "omitzero flag",
+			useOmitZero: true,
+			expected:    "`json:\"omitempty,omitzero\"`",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			file, err := parser.ParseBytes([]byte(yamlInput), 0)
+			if err != nil {
+				t.Fatalf("Failed to parse YAML: %v", err)
+			}
+
+			gen := New()
+			result := gen.Generate(file, "json", tt.useOmitZero)
+
+			if tt.useOmitZero {
+				if !strings.Contains(result, "omitzero") {
+					t.Errorf("Expected result to contain omitzero, got: %s", result)
+				}
+				if strings.Contains(result, "omitempty") {
+					t.Errorf("Expected result to not contain omitempty when using omitzero, got: %s", result)
+				}
+			} else {
+				if !strings.Contains(result, "omitempty") {
+					t.Errorf("Expected result to contain omitempty, got: %s", result)
+				}
+				if strings.Contains(result, "omitzero") {
+					t.Errorf("Expected result to not contain omitzero when using omitempty, got: %s", result)
 				}
 			}
 		})

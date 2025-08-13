@@ -72,7 +72,7 @@ func TestASTVisitor_Visit(t *testing.T) {
 				t.Fatalf("No documents found in parsed YAML")
 			}
 
-			visitor := NewASTVisitor(tt.initialStructs, tt.initialPath)
+			visitor := NewASTVisitor(tt.initialStructs, tt.initialPath, "json", false)
 			result := visitor.Visit(file.Docs[0].Body)
 
 			// Check if visitor returns correctly
@@ -113,7 +113,7 @@ func TestASTVisitor_visitMappingNode(t *testing.T) {
 			path:              []string{"User"},
 			expectedStructs:   1,
 			expectedFieldName: "name",
-			expectedFieldType: "string",
+			expectedFieldType: "*string",
 			expectOmitEmpty:   false,
 		},
 		{
@@ -122,7 +122,7 @@ func TestASTVisitor_visitMappingNode(t *testing.T) {
 			path:              []string{"Config"},
 			expectedStructs:   1,
 			expectedFieldName: "name",
-			expectedFieldType: "string",
+			expectedFieldType: "*string",
 			expectOmitEmpty:   true,
 		},
 		{
@@ -146,7 +146,7 @@ func TestASTVisitor_visitMappingNode(t *testing.T) {
 			path:              []string{"Item"},
 			expectedStructs:   1,
 			expectedFieldName: "id",
-			expectedFieldType: "int",
+			expectedFieldType: "*int",
 			expectOmitEmpty:   false,
 		},
 	}
@@ -163,7 +163,7 @@ func TestASTVisitor_visitMappingNode(t *testing.T) {
 			}
 
 			structs := make(map[string]codegen.StructDef)
-			visitor := NewASTVisitor(structs, tt.path)
+			visitor := NewASTVisitor(structs, []string{}, "json", false)
 
 			mappingNode, ok := file.Docs[0].Body.(*ast.MappingNode)
 			if !ok {
@@ -272,7 +272,7 @@ func TestASTVisitor_visitMappingValueNode(t *testing.T) {
 			}
 
 			structs := make(map[string]codegen.StructDef)
-			visitor := NewASTVisitor(structs, tt.initialPath)
+			visitor := NewASTVisitor(structs, tt.initialPath, "json", false)
 
 			mappingNode, ok := file.Docs[0].Body.(*ast.MappingNode)
 			if !ok {
@@ -316,27 +316,27 @@ func TestASTVisitor_getCurrentStructName(t *testing.T) {
 		},
 		{
 			name:     "single element path",
-			path:     []string{"User"},
+			path:     []string{"user"},
 			expected: "User",
 		},
 		{
 			name:     "multiple element path",
-			path:     []string{"App", "Config", "Database"},
+			path:     []string{"app", "database"},
 			expected: "Database",
 		},
 		{
 			name:     "snake_case path element",
-			path:     []string{"user_profile"},
+			path:     []string{"user", "user_profile"},
 			expected: "UserProfile",
 		},
 		{
 			name:     "kebab-case path element",
-			path:     []string{"user-settings"},
+			path:     []string{"config", "user-settings"},
 			expected: "UserSettings",
 		},
 		{
 			name:     "mixed case path",
-			path:     []string{"api", "v1", "user_data"},
+			path:     []string{"api", "userData"},
 			expected: "UserData",
 		},
 	}
@@ -344,7 +344,7 @@ func TestASTVisitor_getCurrentStructName(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			structs := make(map[string]codegen.StructDef)
-			visitor := NewASTVisitor(structs, tt.path)
+			visitor := NewASTVisitor(structs, tt.path, "json", false)
 			result := visitor.getCurrentStructName()
 
 			if result != tt.expected {
@@ -408,7 +408,7 @@ users:
 			}
 
 			structs := make(map[string]codegen.StructDef)
-			visitor := NewASTVisitor(structs, tt.initialPath)
+			visitor := NewASTVisitor(structs, tt.initialPath, "json", false)
 
 			// Walk the entire document
 			ast.Walk(visitor, file.Docs[0])

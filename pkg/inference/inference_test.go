@@ -22,7 +22,7 @@ func TestDetermineType(t *testing.T) {
 			fieldName: "message",
 			structs:   make(map[string]codegen.StructDef),
 			path:      []string{},
-			expected:  "string",
+			expected:  "*string",
 		},
 		{
 			name:      "integer node",
@@ -30,7 +30,7 @@ func TestDetermineType(t *testing.T) {
 			fieldName: "count",
 			structs:   make(map[string]codegen.StructDef),
 			path:      []string{},
-			expected:  "int",
+			expected:  "*int",
 		},
 		{
 			name:      "float node",
@@ -38,7 +38,7 @@ func TestDetermineType(t *testing.T) {
 			fieldName: "pi",
 			structs:   make(map[string]codegen.StructDef),
 			path:      []string{},
-			expected:  "float64",
+			expected:  "*float64",
 		},
 		{
 			name:      "boolean node true",
@@ -46,7 +46,7 @@ func TestDetermineType(t *testing.T) {
 			fieldName: "enabled",
 			structs:   make(map[string]codegen.StructDef),
 			path:      []string{},
-			expected:  "bool",
+			expected:  "*bool",
 		},
 		{
 			name:      "boolean node false",
@@ -54,7 +54,7 @@ func TestDetermineType(t *testing.T) {
 			fieldName: "disabled",
 			structs:   make(map[string]codegen.StructDef),
 			path:      []string{},
-			expected:  "bool",
+			expected:  "*bool",
 		},
 		{
 			name:      "null node",
@@ -70,7 +70,7 @@ func TestDetermineType(t *testing.T) {
 			fieldName: "items",
 			structs:   make(map[string]codegen.StructDef),
 			path:      []string{},
-			expected:  "[]interface{}",
+			expected:  "[]any",
 		},
 		{
 			name:      "string sequence",
@@ -249,18 +249,18 @@ func TestIsEmptyValue(t *testing.T) {
 			expected:  false,
 		},
 		{
-			name:      "zero integer (not empty)",
+			name:      "zero integer (empty)",
 			yamlInput: `0`,
-			expected:  false,
+			expected:  true,
 		},
 		{
-			name:      "float (not empty)",
-			yamlInput: `3.14`,
-			expected:  false,
-		},
-		{
-			name:      "zero float (not empty)",
+			name:      "zero float (empty)",
 			yamlInput: `0.0`,
+			expected:  true,
+		},
+		{
+			name:      "non-zero float (not empty)",
+			yamlInput: `3.14`,
 			expected:  false,
 		},
 		{
@@ -392,7 +392,7 @@ func TestDetermineType_EdgeCases(t *testing.T) {
 			fieldName: "field",
 			structs:   nil,
 			path:      []string{},
-			expected:  "string",
+			expected:  "*string",
 		},
 		{
 			name:      "sequence with null element",
