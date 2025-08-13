@@ -26,7 +26,7 @@ func (g *Generator) Generate(file *ast.File, tagPrefix string) string {
 	for i, doc := range file.Docs {
 		rootName := g.determineDocumentName(doc, i, len(file.Docs))
 
-		v := visitor.NewASTVisitor(g.structs, []string{rootName})
+		v := visitor.NewASTVisitor(g.structs, []string{rootName}, tagPrefix)
 		ast.Walk(v, doc)
 	}
 

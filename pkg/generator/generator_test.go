@@ -25,8 +25,8 @@ age: 30
 `,
 			tagPrefix: "json",
 			expected: `type Document struct {
-	Name string ` + "`json:\"name\"`" + `
-	Age int ` + "`json:\"age\"`" + `
+	Name *string ` + "`json:\"name\"`" + `
+	Age *int ` + "`json:\"age\"`" + `
 }
 `,
 		},
@@ -39,8 +39,8 @@ user:
 `,
 			tagPrefix: "json",
 			expected: `type User struct {
-	Name string ` + "`json:\"name\"`" + `
-	Age int ` + "`json:\"age\"`" + `
+	Name *string ` + "`json:\"name\"`" + `
+	Age *int ` + "`json:\"age\"`" + `
 }
 `,
 		},
@@ -53,11 +53,11 @@ title: "doc2"
 `,
 			tagPrefix: "json",
 			expected: `type Name struct {
-	Name string ` + "`json:\"name\"`" + `
+	Name *string ` + "`json:\"name\"`" + `
 }
 
 type Title struct {
-	Title string ` + "`json:\"title\"`" + `
+	Title *string ` + "`json:\"title\"`" + `
 }
 `,
 		},
@@ -72,13 +72,13 @@ user:
 `,
 			tagPrefix: "yaml",
 			expected: `type User struct {
-	Name string ` + "`yaml:\"name\"`" + `
+	Name *string ` + "`yaml:\"name\"`" + `
 	Profile Profile ` + "`yaml:\"profile\"`" + `
 }
 
 type Profile struct {
-	Age int ` + "`yaml:\"age\"`" + `
-	Active bool ` + "`yaml:\"active\"`" + `
+	Age *int ` + "`yaml:\"age\"`" + `
+	Active *bool ` + "`yaml:\"active\"`" + `
 }
 `,
 		},
@@ -93,8 +93,8 @@ metadata: {}
 			tagPrefix: "json",
 			expected: `type Document struct {
 	Items []string ` + "`json:\"items\"`" + `
-	Count int ` + "`json:\"count\"`" + `
-	Active bool ` + "`json:\"active\"`" + `
+	Count *int ` + "`json:\"count\"`" + `
+	Active *bool ` + "`json:\"active\"`" + `
 	Metadata map[string]any ` + "`json:\"metadata,omitempty\"`" + `
 }
 `,
@@ -109,10 +109,10 @@ normal_field: "value"
 `,
 			tagPrefix: "json",
 			expected: `type Document struct {
-	Name string ` + "`json:\"name\"`" + `
-	EmptyString string ` + "`json:\"empty_string,omitempty\"`" + `
-	EmptyArray []interface{} ` + "`json:\"empty_array,omitempty\"`" + `
-	NormalField string ` + "`json:\"normal_field\"`" + `
+	Name *string ` + "`json:\"name\"`" + `
+	EmptyString *string ` + "`json:\"empty_string,omitempty\"`" + `
+	EmptyArray []any ` + "`json:\"empty_array,omitempty\"`" + `
+	NormalField *string ` + "`json:\"normal_field\"`" + `
 }
 `,
 		},
@@ -126,10 +126,10 @@ user_id: 123
 `,
 			tagPrefix: "json",
 			expected: `type Document struct {
-	UserName string ` + "`json:\"user_name\"`" + `
-	EmailAddress string ` + "`json:\"email_address\"`" + `
-	IsActive bool ` + "`json:\"is_active\"`" + `
-	UserId int ` + "`json:\"user_id\"`" + `
+	UserName *string ` + "`json:\"user_name\"`" + `
+	EmailAddress *string ` + "`json:\"email_address\"`" + `
+	IsActive *bool ` + "`json:\"is_active\"`" + `
+	UserId *int ` + "`json:\"user_id\"`" + `
 }
 `,
 		},
@@ -142,9 +142,9 @@ is-active: true
 `,
 			tagPrefix: "yaml",
 			expected: `type Document struct {
-	UserName string ` + "`yaml:\"user-name\"`" + `
-	EmailAddress string ` + "`yaml:\"email-address\"`" + `
-	IsActive bool ` + "`yaml:\"is-active\"`" + `
+	UserName *string ` + "`yaml:\"user-name\"`" + `
+	EmailAddress *string ` + "`yaml:\"email-address\"`" + `
+	IsActive *bool ` + "`yaml:\"is-active\"`" + `
 }
 `,
 		},
@@ -161,13 +161,13 @@ user:
 `,
 			tagPrefix: "json",
 			expected: `type Config struct {
-	Database string ` + "`json:\"database\"`" + `
-	Port int ` + "`json:\"port\"`" + `
+	Database *string ` + "`json:\"database\"`" + `
+	Port *int ` + "`json:\"port\"`" + `
 }
 
 type User struct {
-	Name string ` + "`json:\"name\"`" + `
-	Role string ` + "`json:\"role\"`" + `
+	Name *string ` + "`json:\"name\"`" + `
+	Role *string ` + "`json:\"role\"`" + `
 }
 `,
 		},
@@ -190,7 +190,7 @@ settings:
 }
 
 type Settings struct {
-	Theme string ` + "`json:\"theme\"`" + `
+	Theme *string ` + "`json:\"theme\"`" + `
 	Features []string ` + "`json:\"features\"`" + `
 }
 `,
@@ -410,12 +410,12 @@ active: true
 `,
 			tagPrefix: "json",
 			expected: `type User struct {
-	Name string ` + "`json:\"name\"`" + `
+	Name *string ` + "`json:\"name\"`" + `
 }
 
 type Document3 struct {
-	Count int ` + "`json:\"count\"`" + `
-	Active bool ` + "`json:\"active\"`" + `
+	Count *int ` + "`json:\"count\"`" + `
+	Active *bool ` + "`json:\"active\"`" + `
 }
 `,
 		},

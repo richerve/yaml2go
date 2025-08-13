@@ -12,10 +12,11 @@ type ASTVisitor struct {
 	tagPrefix string
 }
 
-func NewASTVisitor(structs map[string]codegen.StructDef, path []string) *ASTVisitor {
+func NewASTVisitor(structs map[string]codegen.StructDef, path []string, tagPrefix string) *ASTVisitor {
 	return &ASTVisitor{
-		structs: structs,
-		path:    path,
+		structs:   structs,
+		path:      path,
+		tagPrefix: tagPrefix,
 	}
 }
 
@@ -95,8 +96,9 @@ func (v *ASTVisitor) visitMappingValueNode(node *ast.MappingValueNode) ast.Visit
 	newPath = append(newPath, keyValue)
 
 	newVisitor := &ASTVisitor{
-		structs: v.structs,
-		path:    newPath,
+		structs:   v.structs,
+		path:      newPath,
+		tagPrefix: v.tagPrefix,
 	}
 
 	// Walk the value with the updated path context
