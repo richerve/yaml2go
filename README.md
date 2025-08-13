@@ -15,8 +15,8 @@ The project is also used as a semi-testbed for agentic coding trying different m
 - If the document has only one map key and all remaining items are under that key. The name of the initial struct will be the name of that key.
 - The yaml types `string`, `number` or `boolean` are represented as a pointer to the corresponding Go type.
 - Empty yaml values: `""`, `[]`, `{}`, `0`, must have the the `omitempty` json tag flag. When using Go 1.24 or above the `omitzero` json tag flag should be used instead.
-  - if the yaml value is `[]` is represented as a `[]string` in Go.
-  - if the yaml value (`{}`), the program will generated a `map[string]any`
+  - if the yaml value is `[]` is represented as a `[]any` in Go.
+  - if the yaml value `{}` is represented as a `map[string]any`
 
 ## Examples
 
@@ -42,7 +42,7 @@ emptyint: 0
 ```Go
 type Document struct {
 	MyKey MyKey `json:"mykey"`
-	Foo string `json:"foo"`
+	Foo *string `json:"foo"`
 	Items []string `json:"items"`
 	EmptyMap map[string]any `json:"emptymap,omitempty"`
 	EmptySlice []string `json:"emptyslice,omitempty"`
